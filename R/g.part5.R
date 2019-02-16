@@ -36,7 +36,7 @@ g.part5 = function(datadir=c(),metadatadir=c(),f0=c(),f1=c(),strategy=1,maxdur=7
   } else {
     dir.create(file.path(metadatadir,ms5.out))
   }
-  
+
   if (save_ms5rawlevels == TRUE) {
     ms5.outraw = "/meta/ms5.outraw"
     if (file.exists(paste(metadatadir,ms5.outraw,sep=""))) {
@@ -55,7 +55,7 @@ g.part5 = function(datadir=c(),metadatadir=c(),f0=c(),f1=c(),strategy=1,maxdur=7
   # fnames.ms5raw = sort(dir(paste(metadatadir,"/meta/ms5.outraw",sep="")))
   # results
   results = paste(metadatadir,"/results",sep="")
-  
+
   # create folder for LIDS output if it does not exist yet
   LIDSfolder = "/meta/LIDS"
   if (LIDS2csv==TRUE) {
@@ -64,7 +64,7 @@ g.part5 = function(datadir=c(),metadatadir=c(),f0=c(),f1=c(),strategy=1,maxdur=7
       dir.create(file.path(metadatadir,LIDSfolder))
     }
   }
-  
+
   #------------------------------------------------
   # specify parameters
   ffdone = fnames.ms5 #ffdone is now a list of files that have already been processed by g.part5
@@ -156,7 +156,7 @@ g.part5 = function(datadir=c(),metadatadir=c(),f0=c(),f1=c(),strategy=1,maxdur=7
                        hrs.del.end=hrs.del.end,maxdur=maxdur)
         time = IMP$metashort[,1]
         ACC = IMP$metashort[,acc.metric] * 1000 #note that this is imputed ACCELERATION because we use this for describing behaviour
-        
+
         if (length(which(names(IMP$metashort) == "anglez")) == 0) {
           cat("Warning: anglez not extracted. Please check that do.anglez == TRUE")
         }
@@ -175,7 +175,7 @@ g.part5 = function(datadir=c(),metadatadir=c(),f0=c(),f1=c(),strategy=1,maxdur=7
         rm(sib.cla.sum)
         def = unique(S$definition)
         cut = which(S$fraction.night.invalid > 0.7 | S$nsib.periods == 0)
-        
+
         if (length(cut) > 0) S = S[-cut,]
         for (j in def) { # loop through sleep definitions (defined by angle and time threshold in g.part3)
           #========================================================
@@ -198,7 +198,7 @@ g.part5 = function(datadir=c(),metadatadir=c(),f0=c(),f1=c(),strategy=1,maxdur=7
               if (pr0 > pr1) pr0 = pr1
               #Coerce time into iso8601 format, so it is sensitive to daylight saving times when hours can be potentially repeated
               timebb = as.character(time[pr0:pr1])
-              if(length(unlist(strsplit(timebb[1],"[+]"))) < 2) { # only do this for ISO8601 format
+              if (is.ISO8601(timebb[1]) == FALSE) { # only do this for POSIX format
                 timebb = POSIXtime2iso8601(timebb,tz=desiredtz)
               }
               s0 = which(timebb == gik.ons[g])[1]
@@ -236,7 +236,7 @@ g.part5 = function(datadir=c(),metadatadir=c(),f0=c(),f1=c(),strategy=1,maxdur=7
           } else {
             nightsi = which(sec == 0 & min == (dayborder-floor(dayborder))*60 & hour == floor(dayborder)) #shift the definition of midnight if required
           }
-          
+
           # create copy of only relevant part of sleep summary dataframe
           summarysleep_tmp2 = summarysleep_tmp[which(summarysleep_tmp$acc_def == j),]
           # following code was move to here, because otherwise it would repeated remove the last night in the loop
@@ -312,7 +312,7 @@ g.part5 = function(datadir=c(),metadatadir=c(),f0=c(),f1=c(),strategy=1,maxdur=7
               w1c = as.character(as.POSIXlt(w1[k],tz=desiredtz))
               s0 = which(as.character(time) == w0c)[1]
               s1 = which(as.character(time) == w1c)[1]
-              
+
               if (length(s0) == 0) {
                 w0c = paste0(w0c," 00:00:00")
                 s0 = which(as.character(time) == w0c)[1]
@@ -322,11 +322,11 @@ g.part5 = function(datadir=c(),metadatadir=c(),f0=c(),f1=c(),strategy=1,maxdur=7
                 s1 = which(as.character(time) == w1c)[1]
               }
               timebb = as.character(time)
-              if(length(unlist(strsplit(timebb[1],"[+]"))) > 1) { # only do this for ISO8601 format
+              if (is.ISO8601(timebb[1]) == TRUE) { # only do this for ISO8601 format
                 timebb = iso8601chartime2POSIX(timebb,tz=desiredtz)
                 s0 = which(as.character(timebb) == w0c)[1]
                 s1 = which(as.character(timebb) == w1c)[1]
-                
+
                 if (length(s0) == 0) {
                   w0c = paste0(w0c," 00:00:00")
                   s0 = which(as.character(timebb) == w0c)[1]
@@ -352,7 +352,7 @@ g.part5 = function(datadir=c(),metadatadir=c(),f0=c(),f1=c(),strategy=1,maxdur=7
                 diur[s0:s1] = 1
               }
             }
-            
+
             if (diur[1] != 0 & (60/ws3)*60 < nightsi[1]) { # the statement with unique that was here results is ambiguous because it can have multiple values
               # waketi = which(diff(detection) == -1)[1]
               # onseti = which(diff(detection) == 1)[1] # added 20/4/2018 by VvH
@@ -383,7 +383,7 @@ g.part5 = function(datadir=c(),metadatadir=c(),f0=c(),f1=c(),strategy=1,maxdur=7
                   bc.mvpa = levels$bc.mvpa
                   bc.lig = levels$bc.lig
                   bc.in = levels$bc.in
-                  
+
                   if (save_ms5rawlevels == TRUE) {
                     rawlevels_fname = paste(metadatadir,ms5.outraw,"/",fnames.ms3[i],"_",TRLi,"_",TRMi,"_",TRVi,"raw.csv",sep="")
                     if (length(time) == length(LEVELS)) {
@@ -510,9 +510,9 @@ g.part5 = function(datadir=c(),metadatadir=c(),f0=c(),f1=c(),strategy=1,maxdur=7
                             if (wi > 1) dsummary[di,fi] = summarysleep_tmp2$acc_wake[wi-1]
                           }
                           ds_names[fi] = "acc_wake";      fi = fi + 1
-                          
+
                           dsummary[di,fi] = summarysleep_tmp2$sleeplog_onset[wi]
-                          
+
                           ds_names[fi] = "sleeplog_onset";      fi = fi + 1
                           if (timewindowi == "WW") {
                             dsummary[di,fi] = summarysleep_tmp2$sleeplog_wake[wi]
@@ -626,7 +626,7 @@ g.part5 = function(datadir=c(),metadatadir=c(),f0=c(),f1=c(),strategy=1,maxdur=7
                         ds_names[fi] = "dur_night_min";      fi = fi + 1
                         dsummary[di,fi] = (length(c(qqq1:qqq2)) * ws3) / 60
                         ds_names[fi] = "dur_nightandday_min";      fi = fi + 1
-                        
+
                         #============================================
                         # Number of long wake periods (defined as > 5 minutes) during the night
                         Nawake = length(which(abs(diff(which(LEVELS[qqq1:qqq2] == 0))) > (300 / ws3))) - 2
@@ -720,13 +720,13 @@ g.part5 = function(datadir=c(),metadatadir=c(),f0=c(),f1=c(),strategy=1,maxdur=7
                           if (ignore == FALSE) dsummary[di,fi] = M5VALUE
                           ds_names[fi] = paste("M",wini,"VALUE",sep="");      fi = fi + 1
                           if (ignore == FALSE) {
-                            if(length(unlist(strsplit(L5HOUR,"[+]"))) > 1) { # only do this for ISO8601 format
+                            if (is.ISO8601(L5HOUR)) { # only do this for ISO8601 format
                               L5HOUR = as.character(iso8601chartime2POSIX(L5HOUR,tz=desiredtz))
                               M5HOUR = as.character(iso8601chartime2POSIX(M5HOUR,tz=desiredtz))
                               if (length(unlist(strsplit(L5HOUR," "))) == 1) L5HOUR = paste0(L5HOUR," 00:00:00") #added because on some OS timestamps are deleted for midnight
                               if (length(unlist(strsplit(M5HOUR," "))) == 1) M5HOUR = paste0(M5HOUR," 00:00:00")
                             }
-                            
+
                             if (L5HOUR != "not detected") {
                               time_num = sum(as.numeric(unlist(strsplit(unlist(strsplit(L5HOUR," "))[2],":"))) * c(3600,60,1)) / 3600
                               if (time_num < 12) time_num = time_num + 24
@@ -769,16 +769,16 @@ g.part5 = function(datadir=c(),metadatadir=c(),f0=c(),f1=c(),strategy=1,maxdur=7
                             if (length(which(sleepbouts[,1] != 0)) > 0) {
                               # TO DO: This currently only considers the first sleep bout, implement loop to analyse all sleep bouts?
                               sleepboutnr = 1
-                              
+
                               sleepboutlength = (sleepbouts[sleepboutnr,2] - sleepbouts[sleepboutnr,1]) / (60/ws3) # in minutes
                               time_boutstart_hr = hour[sse][which(diur[sse] == 1)][sleepbouts[sleepboutnr,1]]
                               time_boutstart_min = min[sse][which(diur[sse] == 1)][sleepbouts[sleepboutnr,1]]
                               time_boutstart_sec = sec[sse][which(diur[sse] == 1)][sleepbouts[sleepboutnr,1]]
-                              
+
                               time_sleepboutstart_char = paste0(time_boutstart_hr,":",time_boutstart_min,":",time_boutstart_sec)
                               if (time_boutstart_hr < 24) time_boutstart_hr = time_boutstart_hr + 24
                               time_sleepboutstart_num = time_boutstart_hr + time_boutstart_min/60 + time_boutstart_sec/(3600)
-                              
+
                               accnight = accnight[sleepbouts[sleepboutnr,1]:sleepbouts[sleepboutnr,2]]
                               # #------------------------------
                               # # TO DO: Remove next lines
@@ -792,21 +792,21 @@ g.part5 = function(datadir=c(),metadatadir=c(),f0=c(),f1=c(),strategy=1,maxdur=7
                               # boutline = rep(200,diff(sleepbouts[1,])+1)
                               # lines(timelinebout,boutline,type="l",col="red")
                               # #-----------------------------------------
-                              
+
                               #analyse twice using two different LIDS signals
                               #1) LIDS using a binary distinction movement/non-movement above a threshold
                               #2) LIDS using ENMO minus a threshold
                               LIDSan = g.LIDS.analyse(acc=accnight,ws3=ws3,fit.criterion.cosfit=fit.criterion.cosfit, LIDS_cosfit_periods = LIDS_cosfit_periods, nonstationary = nonstationary)
                               LIDSan_ENMOsub = g.LIDS.analyse_ENMOsub(acc=accnight,ws3=ws3,fit.criterion.cosfit=fit.criterion.cosfit, LIDS_cosfit_periods = LIDS_cosfit_periods, nonstationary = nonstationary)
-                              
+
                               if (length(LIDSan) > 0) { # only report LIDS if LIDS analyses were successful
                                 LIDS_S = LIDSan$LIDS_S
                                 vars_nontimecourse <- c("period","DC","RoO","phase", "cor", "pvalue", "MRI", "lm_intercept", "lm_slope", "lm_MeanAmplitude")
-                                
+
                                 #add ENMOsub info
                                 #these lines can be removed later when not needed anymore
                                 if(length(LIDSan_ENMOsub) > 0) {
-                                  
+
                                   LIDS_S_ENMOsub = LIDSan_ENMOsub$LIDS_S
                                   names(LIDS_S_ENMOsub) = paste(names(LIDS_S_ENMOsub),"ENMOsub", sep="_")
                                   LIDS_S = merge(LIDS_S, LIDS_S_ENMOsub, by.x="time_min", by.y="time_min_ENMOsub", all=TRUE)
@@ -824,7 +824,7 @@ g.part5 = function(datadir=c(),metadatadir=c(),f0=c(),f1=c(),strategy=1,maxdur=7
                                 # medianperiod = median(LIDS_NS$period,na.rm = TRUE)
                                 # mediancor = median(LIDS_NS$cor,na.rm = TRUE)
                                 # medianMRI = median(LIDS_NS$MRI,na.rm = TRUE)
-                                
+
                                 #time_LIDS = LIDS_NS$time
                                 # x11()
                                 # par(mfrow=c(2,2),mar=c(4,4,4,1))
@@ -839,14 +839,14 @@ g.part5 = function(datadir=c(),metadatadir=c(),f0=c(),f1=c(),strategy=1,maxdur=7
                                 LIDS_S_nsummary = LIDS_S[1,vars_nontimecourse]
                                 LIDS_S_nsummary = cbind(LIDS_S_nsummary, cycles = max(LIDS_S$cycle, na.rm = TRUE))
                                 LIDS_S_nsummary = cbind(LIDS_S_nsummary, cycles_ENMOsub = max(LIDS_S$cycle_ENMOsub, na.rm = TRUE))
-                                
+
                                 #Add LIDS to summary
                                 LIDSvariables = as.vector(c(data.frame(wakeduraftersleep = sleepbouts[1,3],
                                                                        sleepboutlength = sleepboutlength,
                                                                        time_sleepboutstart_char = as.character(time_sleepboutstart_char),
                                                                        time_sleepboutstart_num = time_sleepboutstart_num),
                                                             LIDS_S_nsummary)) #4 sleep + 11 binary + 11 ENMOsub variables = 26 variables
-                                
+
                                 dsummary[di,fi:(fi+25)] = as.character(LIDSvariables) # Comment Vincent: Although this is a nice object with value names I am converting into a character vector, because that is what dsummary expects.
                                 #Store LIDS time series
                                 #as R dataframe
@@ -871,13 +871,13 @@ g.part5 = function(datadir=c(),metadatadir=c(),f0=c(),f1=c(),strategy=1,maxdur=7
                           }
                           ds_names[fi:(fi+25)] = c("LIDS_wakeboutlength_min","LIDS_sleepboutlength_min",
                                                    "LIDS_sleepboutstart_char", "LIDS_sleepboutstart_num",
-                                                   
+
                                                    "LIDS_cos_period_min", "LIDS_cos_DC",
                                                    "LIDS_cos_rangeofoscillation", "LIDS_cos_phaseconstant_deg",
                                                    "LIDS_cos_corrCoeff", "LIDS_cos_corrPvalue",
                                                    "LIDS_cos_MunichRhythmicityIndex",
                                                    "LIDS_lm_intercept", "LIDS_lm_slope", "LIDS_lm_meanamplitude",
-                                                   
+
                                                    "LIDS_cos_period_min_ENMOsub", "LIDS_cos_DC_ENMOsub",
                                                    "LIDS_cos_rangeofoscillation_ENMOsub", "LIDS_cos_phaseconstant_deg_ENMOsub",
                                                    "LIDS_cos_corrCoeff_ENMOsub", "LIDS_cos_corrPvalue_ENMOsub",
