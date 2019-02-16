@@ -1,6 +1,12 @@
 \name{NEWS}
 \title{News for Package \pkg{GGIR}}
 \newcommand{\cpkg}{\href{http://CRAN.R-project.org/package=#1}{\pkg{#1}}}
+
+\section{Changes in version 1.9-0 (release date:16-02-2019)}{
+\itemize{
+  \item Experimental version of LIDS analysis added.
+  }
+}
 \section{Changes in version 1.8-1 (release date:11-01-2019)}{
 \itemize{
   \item Part4 handling of clocktime 9am corrected in addition to fix from version 1.7-1.
