@@ -20,7 +20,7 @@ g.report.part5 = function(metadatadir=c(),f0=c(),f1=c(),loglocation=c(),
     fnames.ms5 = list.files(paste0(metadatadir,ms5.out),full.names=TRUE)
     if(f1 > length(fnames.ms5)) f1 = length(fnames.ms5)
     cat(" loading all the milestone data from part 5 this can take a few minutes\n")
-    myfun = function(x) { 
+    myfun = function(x) {
       load(file=x)
       cut = which(output[,1] == "")
       if (length(cut) > 0 & length(cut) < nrow(output)) {
@@ -29,7 +29,7 @@ g.report.part5 = function(metadatadir=c(),f0=c(),f1=c(),loglocation=c(),
       out = as.matrix(output)
     }
     outputfinal = as.data.frame(do.call(rbind,lapply(fnames.ms5[f0:f1],myfun)),stringsAsFactors=FALSE)
-    
+
     # empty columns
     cut = which(outputfinal[1,] == "")
     if (length(cut) > 0) {
@@ -60,11 +60,11 @@ g.report.part5 = function(metadatadir=c(),f0=c(),f1=c(),loglocation=c(),
     # delete nights without diary, with limited or no acceleration:
     if (only.use.sleeplog == TRUE) {
       del = which(as.numeric(as.character(outputfinal$cleaningcode)) > 0 |
-                    as.character(outputfinal$sleeplog_used) == "FALSE" | 
+                    as.character(outputfinal$sleeplog_used) == "FALSE" |
                     as.character(outputfinal$acc_available) == "FALSE")
     } else {
       #only delete nights with no or no valid accelerometer data, but consider nigths with missing sleep log data
-      del = which(as.numeric(as.character(outputfinal$cleaningcode)) > 1 | as.character(outputfinal$acc_available) == "FALSE") 
+      del = which(as.numeric(as.character(outputfinal$cleaningcode)) > 1 | as.character(outputfinal$acc_available) == "FALSE")
     }
     if (length(del) > 0) {
       outputfinal = outputfinal[-del,]
@@ -91,7 +91,7 @@ g.report.part5 = function(metadatadir=c(),f0=c(),f1=c(),loglocation=c(),
           for (h3 in 1:length(uTRVi)) {
             for (h4 in 1:length(uacc_def)) {
               cat(paste0(" ",uwi[j],"-",uTRLi[h1],"-",uTRMi[h2],"-",uTRVi[h3],"-",uacc_def[h4]))
-              seluwi = which(as.character(outputfinal$window) == uwi[j] & 
+              seluwi = which(as.character(outputfinal$window) == uwi[j] &
                                as.character(outputfinal$TRLi) == uTRLi[h1] &
                                as.character(outputfinal$TRMi) == uTRMi[h2] &
                                as.character(outputfinal$TRVi) == uTRVi[h3] &
@@ -100,7 +100,7 @@ g.report.part5 = function(metadatadir=c(),f0=c(),f1=c(),loglocation=c(),
               if (nrow(outputfinal[seluwi,]) == 0) {
                 cat("report not stored, because no results available")
               } else {
-                
+
                 # first update variable names
                 LT = as.character(max(uTRLi))#as.character(outputfinal[seluwi[1],which(colnames(outputfinal) == "TRLi")])
                 MT = as.character(max(uTRMi)) # as.character(outputfinal[seluwi[1],which(colnames(outputfinal) == "TRMi")])
@@ -115,18 +115,18 @@ g.report.part5 = function(metadatadir=c(),f0=c(),f1=c(),loglocation=c(),
                   if (length(tr2) > 1) CN[z4] =  paste(tr2[1],"LIG",uTRLi[h1],"_",uTRMi[h2],tr2[2],sep="")
                   # MOD
                   tr3 = unlist(strsplit(CN[z4],paste("MOD",MT,"_",VT,sep="")))
-                  if (length(tr3) > 1) CN[z4] =  paste(tr3[1],"MOD",uTRMi[h2],"_",uTRVi[h3],tr3[2],sep="")                  
+                  if (length(tr3) > 1) CN[z4] =  paste(tr3[1],"MOD",uTRMi[h2],"_",uTRVi[h3],tr3[2],sep="")
                   # VIG
                   tr4 = unlist(strsplit(CN[z4],paste("VIG",VT,sep="")))
                   if (length(tr4) > 1) CN[z4] =  paste(tr4[1],"VIG",uTRVi[h3],tr4[2],sep="")
                   # MVPA with T_ mod _ m #for mg and min
                   tr5 = unlist(strsplit(CN[z4],paste("T",MT,"_m",sep="")))
                   if (length(unlist(strsplit(CN[z4],"MVPA"))) > 1 &
-                      length(tr5) > 1) CN[z4] =  paste(tr5[1],"T",uTRMi[h2],"_m",tr5[2],sep="")                  
+                      length(tr5) > 1) CN[z4] =  paste(tr5[1],"T",uTRMi[h2],"_m",tr5[2],sep="")
                   # INB with T_ mod _ m
                   tr6 = unlist(strsplit(CN[z4],paste("T",LT,"_m",sep="")))
                   if (length(unlist(strsplit(CN[z4],"INB"))) > 1 &
-                      length(tr6) > 1) CN[z4] =  paste(tr6[1],"T",uTRLi[h1],"_m",tr6[2],sep="")                  
+                      length(tr6) > 1) CN[z4] =  paste(tr6[1],"T",uTRLi[h1],"_m",tr6[2],sep="")
                   # LIGB with T_ mod _ m
                   tr7 = unlist(strsplit(CN[z4],paste("T",LT,"_",MT,"_m",sep="")))
                   if (length(unlist(strsplit(CN[z4],"LIGB"))) > 1 &
@@ -158,41 +158,41 @@ g.report.part5 = function(metadatadir=c(),f0=c(),f1=c(),loglocation=c(),
                     if (length(tr10) > 1) CNtemp =  paste(tr10[1],"LIG",uTRLi[h1],"_",uTRMi[h2],sep="")
                     # MOD
                     tr11 = unlist(strsplit(CNtemp,paste("MOD",MT,"_",VT,sep="")))
-                    if (length(tr11) > 1) CNtemp =  paste(tr11[1],"MOD",uTRMi[h2],"_",uTRVi[h3],sep="")                  
+                    if (length(tr11) > 1) CNtemp =  paste(tr11[1],"MOD",uTRMi[h2],"_",uTRVi[h3],sep="")
                     # VIG
                     tr12 = unlist(strsplit(CNtemp,paste("VIG",VT,sep="")))
                     if (length(tr12) > 1) CNtemp =  paste(tr12[1],"VIG",uTRVi[h3],sep="")
                     # MVPA with T_ mod _ m #for mg and min
                     tr13 = unlist(strsplit(CNtemp,paste("T",MT,sep="")))
                     if (length(unlist(strsplit(CNtemp,"MVPA"))) > 1 &
-                        length(tr13) > 1) CNtemp =  paste(tr13[1],"T",uTRMi[h2],sep="")                  
+                        length(tr13) > 1) CNtemp =  paste(tr13[1],"T",uTRMi[h2],sep="")
                     # INB with T_ mod _ m
                     tr14 = unlist(strsplit(CNtemp,paste("T",LT,sep="")))
                     if (length(unlist(strsplit(CNtemp,"INB"))) > 1 &
-                        length(tr14) > 1) CNtemp =  paste(tr14[1],"T",uTRLi[h1],sep="")                  
+                        length(tr14) > 1) CNtemp =  paste(tr14[1],"T",uTRLi[h1],sep="")
                     # LIGB with T_ mod _ m
                     tr14 = unlist(strsplit(CNtemp,paste("T",LT,"_",MT,sep="")))
                     if (length(unlist(strsplit(CNtemp,"LIGB"))) > 1 &
-                        length(tr14) > 1) CNtemp =  paste(tr14[1],"T",uTRLi[h1],"_",uTRMi[h2],sep="")                 
+                        length(tr14) > 1) CNtemp =  paste(tr14[1],"T",uTRLi[h1],"_",uTRMi[h2],sep="")
                     if (length(unlist(strsplit(CNtemp,"dum"))) > 1) {
                       CN[z4] = unlist(strsplit(CNtemp,"dum"))[1]
                     } else {
                       CN[z4] = CNtemp
                     }
                   }
-                  #                   # Nblocks and MVPA with T_ mod 
+                  #                   # Nblocks and MVPA with T_ mod
                   #                   tr5 = unlist(strsplit(CN[z4],paste("T",MT,sep="")))
                   #                   if (length(unlist(strsplit(CN[z4],"MVPA"))) > 1 &
-                  #                         length(unlist(strsplit(CN[z4],"Nblocks"))) > 1) CN[z4] =  paste(tr5[1],"T",uTRMi[h2],sep="")                  
+                  #                         length(unlist(strsplit(CN[z4],"Nblocks"))) > 1) CN[z4] =  paste(tr5[1],"T",uTRMi[h2],sep="")
                   #                   # Nblocks and INB with T_ mod _ m
                   #                   tr6 = unlist(strsplit(CN[z4],paste("T",LT,sep="")))
                   #                   if (length(unlist(strsplit(CN[z4],"INB"))) > 1 &
-                  #                         length(unlist(strsplit(CN[z4],"Nbolcks"))) > 1) CN[z4] =  paste(tr6[1],"T",uTRLi[h1],sep="")                  
-                  
+                  #                         length(unlist(strsplit(CN[z4],"Nbolcks"))) > 1) CN[z4] =  paste(tr6[1],"T",uTRLi[h1],sep="")
+
                   #                   CN[z4] = paste(CN[z4],"qdd",sep="") # add dummy character
                   #                   CNtemp = as.character(unlist(strsplit(CN[z4],"qdd"))) # remove dummy character
                   CNtemp = CN[z4]
-                  if (length(which(CNtemp =="")) >= 1) CNtemp = CNtemp[-which(CNtemp =="")] 
+                  if (length(which(CNtemp =="")) >= 1) CNtemp = CNtemp[-which(CNtemp =="")]
                   CN[z4] = CNtemp
                 }
                 outputfinal2 = outputfinal
@@ -201,74 +201,76 @@ g.report.part5 = function(metadatadir=c(),f0=c(),f1=c(),loglocation=c(),
                                  colnames(outputfinal2) == "TRMi" | colnames(outputfinal2) == "TRVi" |
                                  colnames(outputfinal2) == "acc_def")
                 outputfinal2 = outputfinal2[,-delcol]
-                                #-------------------------------------------------------------
+                #-------------------------------------------------------------
                 # store all summaries in csv files
                 write.csv(outputfinal2[seluwi,],paste(metadatadir,"/results/part5_daysummary_",
                                                       uwi[j],"_L",uTRLi[h1],"M",uTRMi[h2],"V",uTRVi[h3],"_",uacc_def[h4],".csv",sep=""),row.names=FALSE)
                 #------------------------------------------------------------------------------------
-                #also compute summary per person (we could modify this to also provide the weighted average)
+                #also compute summary per person
                 OF3 = outputfinal2[seluwi,]
-                # OF4 = aggregate.data.frame(OF3,by=list(OF3$filename),FUN = df) # plain average
-                takeweightedmean = function(A,filename="filename",daytype="daytype") {
+                agg_plainNweighted = function(df,filename="filename",daytype="daytype") {
                   # function to take both the weighted (by weekday/weekendday) and plain average of all numeric variables
-                  # ignorevar = c("boutcriter.in","boutcriter.lig","id","boutcriter.mvpa",
-                  #               "daysleeper","cleaningcode","night number")
-                  ignorevar = c("daysleeper","cleaningcode","night number")
-                  for (ee in 1:ncol(A)) { # make sure that numeric columns have class numeric
-                    nr = nrow(A)
+                  # df: input data.frame (OF3 outside this function)
+                  ignorevar = c("daysleeper","cleaningcode","night_number")
+                  for (ee in 1:ncol(df)) { # make sure that numeric columns have class numeric
+                    nr = nrow(df)
                     if (nr > 30) nr = 30
                     options(warn=-1)
-                    trynum = as.numeric(as.character(A[1:nr,ee]))
+                    trynum = as.numeric(as.character(df[1:nr,ee]))
                     options(warn=0)
-                    
-                    if (length(which(is.na(trynum) == TRUE)) != nr & length(which(ignorevar == names(A)[ee])) == 0) {
+                    if (length(which(is.na(trynum) == TRUE)) != nr & length(which(ignorevar == names(df)[ee])) == 0) {
                       options(warn=-1)
-                      class(A[,ee]) = "numeric"
+                      class(df[,ee]) = "numeric"
                       options(warn=0)
                     }
                   }
-                  df = function(x) {
+                  plain_mean = function(x) {
                     options(warn=-1)
-                    df = mean(x,na.rm=TRUE)
+                    plain_mean = mean(x,na.rm=TRUE)
                     options(warn=0)
-                    if (is.na(df) == TRUE) {
-                      df = x[1]
+                    if (is.na(plain_mean) == TRUE) {
+                      plain_mean = x[1]
                     }
-                    df
+                    return(plain_mean)
                   }
-                  E = aggregate.data.frame(A,by=list(A$filename),FUN=df)
-                  E = E[,-1]
-                  B = aggregate.data.frame(A,by=list(A$filename,A$daytype),df)
-                  B = B[,-c(1:2)]
+                  # aggregate across all days
+                  PlainAggregate = aggregate.data.frame(df,by=list(df$filename),FUN=plain_mean)
+                  PlainAggregate = PlainAggregate[,-1]
+                  # aggregate per day type (weekday or weekenddays)
+                  AggregateWDWE = aggregate.data.frame(df,by=list(df$filename,df$daytype),plain_mean)
+                  AggregateWDWE = AggregateWDWE[,-c(1:2)]
                   len = NULL
-                  B$len <- 0
-                  B$len[which(as.character(B$daytype) == "WD")] = 5
-                  B$len[which(as.character(B$daytype) == "WE")] = 2
-                  dt <- data.table::as.data.table(B[,which(lapply(B, class)=="numeric" | names(B) == filename)])
+                  AggregateWDWE$len <- 0
+                  AggregateWDWE$len[which(as.character(AggregateWDWE$daytype) == "WD")] = 5
+                  AggregateWDWE$len[which(as.character(AggregateWDWE$daytype) == "WE")] = 2
+                  dt <- data.table::as.data.table(AggregateWDWE[,which(lapply(AggregateWDWE, class)=="numeric" | names(AggregateWDWE) == filename)])
                   options(warn=-1)
                   .SD <- .N <- count <- a <- NULL
-                  dt2 <- dt[,lapply(.SD,weighted.mean,w=len,na.rm=TRUE),by=list(filename)]
+                  WeightedAggregate <- dt[,lapply(.SD,weighted.mean,w=len,na.rm=TRUE),by=list(filename)]
                   options(warn=0)
-                  charcol = which(lapply(E, class) != "numeric" & names(E) != filename)
-                  numcol = which(lapply(E, class) == "numeric")
-                  dt2 = as.data.frame(dt2)
-                  G = base::merge(E,dt2,by="filename",all.x=TRUE)
-                  p0b = paste0(names(E[,charcol]),".x")
-                  p1 = paste0(names(E[,numcol]),".x")
-                  p2 = paste0(names(E[,numcol]),".y")
+                  # merge them into one output data.frame (G)
+                  charcol = which(lapply(PlainAggregate, class) != "numeric" & names(PlainAggregate) != filename)
+                  numcol = which(lapply(PlainAggregate, class) == "numeric")
+                  WeightedAggregate = as.data.frame(WeightedAggregate)
+                  G = base::merge(PlainAggregate,WeightedAggregate,by="filename",all.x=TRUE)
+                  p0b = paste0(names(PlainAggregate[,charcol]),".x")
+                  p1 = paste0(names(PlainAggregate[,numcol]),".x")
+                  p2 = paste0(names(PlainAggregate[,numcol]),".y")
                   for (i in 1:length(p0b)) {
-                    names(G)[which(names(G)==p0b[i])] = paste0(names(E[,charcol])[i])
+                    names(G)[which(names(G)==p0b[i])] = paste0(names(PlainAggregate[,charcol])[i])
                   }
                   for (i in 1:length(p1)) {
-                    names(G)[which(names(G)==p1[i])] = paste0(names(E[,numcol])[i],"_pla")
+                    names(G)[which(names(G)==p1[i])] = paste0(names(PlainAggregate[,numcol])[i],"_pla")
                   }
                   for (i in 1:length(p2)) {
-                    names(G)[which(names(G)==p2[i])] = paste0(names(E[,numcol])[i],"_wei")
+                    names(G)[which(names(G)==p2[i])] = paste0(names(PlainAggregate[,numcol])[i],"_wei")
                   }
                   G = G[,-which(names(G)=="len" | names(G)=="daytype")]
                   return(G)
                 }
-                # add column to define what are weekenddays and weekdays
+                #---------------------------------------------
+                # Calculate, weighted and plain mean of all variables
+                # add column to define what are weekenddays and weekdays as needed for function agg_plainNweighted
                 OF3$daytype = 0
                 OF3$daytype[which(OF3$weekday == "Sunday" | OF3$weekday == "Saturday")] = "WE"
                 OF3$daytype[which(OF3$weekday == "Monday" | OF3$weekday == "Tuesday" |
@@ -277,75 +279,87 @@ g.report.part5 = function(metadatadir=c(),f0=c(),f1=c(),loglocation=c(),
                 OF3 = as.data.frame(OF3)
 
                 # before processing OF3, first identify which days have enough monitor wear time
-                maxpernwnight = (1 - (includenightcrit / 24)) * 100
-                maxpernwday = (1 - (includedaycrit / 24)) * 100
-                validdaysi = which(OF3$nonwear_perc_day < maxpernwday & OF3$nonwear_perc_night < maxpernwnight)
-                # aggregate OF3 (days) to person summaries in OF4
-                OF4 = takeweightedmean(OF3[validdaysi,],filename="filename",day="daytype")
-                #--------------------
-                # calculate additional variables
-                OF3tmp = OF3[,c("filename","night number","daysleeper","cleaningcode","sleeplog_used",
-                                "acc_available","nonwear_perc_day","nonwear_perc_night","daytype","dur_day_min",
-                                "dur_night_min")]
-                foo34 = function(A,B,nameold,namenew,cval) {
-                  # function to help with calculating additinal variables
-                  # related to counting how many days of measurement there are
-                  # that meet a certain criteria
-                  # cval is a vector with 0 and 1, indicating whether the criteria is met
-                  # B is the aggregate data (per individual)
-                  # A is the non-aggregated data (days across individuals
-                  # we want to extra the number of days per individuals that meet the
-                  # criteria in A, and make it allign with B.
-                  df2 = function(x) df2 = length(which(x==cval)) # check which values meets criterion
-                  mmm = as.data.frame(aggregate.data.frame(A,by=list(A$filename),FUN = df2))
-                  mmm2 = data.frame(filename=mmm$Group.1,cc=mmm[,nameold])
-                  B = merge(B,mmm2,by="filename")
-                  names(B)[which(names(B)=="cc")] = namenew
-                  foo34 = B
+                getValidDayIndices = function(x, includenightcrit, includedaycrit) {
+                  maxpernwnight = (1 - (includenightcrit / 24)) * 100
+                  maxpernwday = (1 - (includedaycrit / 24)) * 100
+                  indices = which(x$nonwear_perc_day < maxpernwday &
+                                    x$nonwear_perc_night < maxpernwnight &
+                                    x$dur_night_min > 0 & x$dur_day_min > 0) # line added 10/3/2019 because missing days/nights were previously included
+                  return(indices)
                 }
-                # # calculate number of valid days (both night and day criteria met)
-                OF3tmp$validdays = 0
-                OF3tmp$nonwear_perc_day = as.numeric(OF3tmp$nonwear_perc_day)
-                OF3tmp$nonwear_perc_night = as.numeric(OF3tmp$nonwear_perc_night)
-                OF3tmp$dur_night_min = as.numeric(OF3tmp$dur_night_min)
-                OF3tmp$dur_day_min = as.numeric(OF3tmp$dur_day_min)
-                # criteria is that nonwear percentage needs to be below threshold for both day and night:
-                days2keep = which(OF3tmp$nonwear_perc_day < maxpernwday &
-                                        OF3tmp$nonwear_perc_night < maxpernwnight)
-                OF3tmp$validdays[days2keep] = 1
-                # now we have a label for the valid days, we can create a new variable in OF4 that is a count of the number of valid days
-                OF4 = foo34(A=OF3tmp,B=OF4,nameold="validdays",namenew="Nvaliddays",cval=1)
-                # do the same for WE (weekend days):
-                OF3tmp$validdays = 0
-                OF3tmp$validdays[days2keep[which(OF3tmp$daytype[days2keep] == "WE")]] = 1
-                OF4 = foo34(A=OF3tmp,B=OF4,nameold="validdays",namenew="Nvaliddays_WE",cval=1)
-                # do the same for WD (weekdays):
-                OF3tmp$validdays = 0
-                OF3tmp$validdays[days2keep[which(OF3tmp$daytype[days2keep] == "WD")]] = 1
-                OF4 = foo34(A=OF3tmp,B=OF4,nameold="validdays",namenew="Nvaliddays_WD",cval=1) # create variable from it
-                OF4 = foo34(A=OF3tmp[validdaysi,],B=OF4,nameold="daysleeper",namenew="Ndaysleeper",cval=1)
-                OF4 = foo34(A=OF3tmp[validdaysi,],B=OF4,nameold="cleaningcode",namenew="Ncleaningcodezero",cval=0)
-                OF4 = foo34(A=OF3tmp[validdaysi,],B=OF4,nameold="sleeplog_used",namenew="Nsleeplog_used",cval=TRUE)
-                OF4 = foo34(A=OF3tmp[validdaysi,],B=OF4,nameold="acc_available",namenew="Nacc_available",cval=1)
-                
-                OF4 = cbind(OF4[,1:4],OF4[,(ncol(OF4)-6):ncol(OF4)],OF4[,5:(ncol(OF4)-7)])
-                nom = names(OF4)
-                cut = which(nom == "acc_onset_ts" | nom == "acc_wake_ts" | 
-                              nom == "sleeplog_onset_ts" | nom == "sleeplog_wake_ts" | nom == "night number"
-                            | nom == "daysleeper" | nom == "cleaningcode" | nom == "acc_available"
-                            | nom == "sleeplog_used" | nom == "L5TIME" | nom == "M5TIME"
-                            | nom == "L10TIME" | nom == "M10TIME" | nom == "night number" | nom == "acc_available")
-                names(OF4)[which(names(OF4)=="weekday")] = "startday"
-                OF4 = OF4[,-cut]
-                OF4 = as.matrix(OF4)
-                OF4[which(is.na(OF4) == TRUE)] = ""
-                #-------------------------------------------------------------
-                # store all summaries in csv files
-                write.csv(OF4,paste(metadatadir,"/results/part5_personsummary_",
-                                    uwi[j],"_L",uTRLi[h1],"M",uTRMi[h2],"V",uTRVi[h3],"_",uacc_def[h4],".csv",sep=""),row.names=FALSE)
+                validdaysi = getValidDayIndices(OF3,includenightcrit, includedaycrit)
+
+                if (length(validdaysi) >0) { # do not attempt to aggregate if there are no valid days
+                  # aggregate OF3 (days) to person summaries in OF4
+                  OF4 = agg_plainNweighted(OF3[validdaysi,],filename="filename",day="daytype")
+                  # calculate additional variables
+                  OF3tmp = OF3[,c("filename","night_number","daysleeper","cleaningcode","sleeplog_used",
+                                  "acc_available","nonwear_perc_day","nonwear_perc_night","daytype","dur_day_min",
+                                  "dur_night_min")]
+                  foo34 = function(df,aggPerIndividual,nameold,namenew,cval) {
+                    # function to help with calculating additinal variables
+                    # related to counting how many days of measurement there are
+                    # that meet a certain criteria
+                    # cval is a vector with 0 and 1, indicating whether the criteria is met
+                    # aggPerIndividual is the aggregate data (per individual)
+                    # df is the non-aggregated data (days across individuals
+                    # we want to extra the number of days per individuals that meet the
+                    # criteria in df, and make it allign with aggPerIndividual.
+                    df2 = function(x) df2 = length(which(x==cval)) # check which values meets criterion
+                    mmm = as.data.frame(aggregate.data.frame(df,by=list(df$filename),FUN = df2))
+                    mmm2 = data.frame(filename=mmm$Group.1,cc=mmm[,nameold])
+                    aggPerIndividual = merge(aggPerIndividual,mmm2,by="filename")
+                    names(aggPerIndividual)[which(names(aggPerIndividual)=="cc")] = namenew
+                    foo34 = aggPerIndividual
+                  }
+                  # # calculate number of valid days (both night and day criteria met)
+                  OF3tmp$validdays = 0
+                  OF3tmp$nonwear_perc_day = as.numeric(OF3tmp$nonwear_perc_day)
+                  OF3tmp$nonwear_perc_night = as.numeric(OF3tmp$nonwear_perc_night)
+                  OF3tmp$dur_night_min = as.numeric(OF3tmp$dur_night_min)
+                  OF3tmp$dur_day_min = as.numeric(OF3tmp$dur_day_min)
+                  # criteria is that nonwear percentage needs to be below threshold for both day and night:
+                  days2keep = getValidDayIndices(OF3tmp,includenightcrit, includedaycrit)
+                  # days2keep = which(OF3tmp$nonwear_perc_day < maxpernwday &
+                  #                         OF3tmp$nonwear_perc_night < maxpernwnight &
+                  #                     (as.numeric(OF3tmp$dur_night_min) - (includenightcrit*60)) > 0 &
+                  #                     (as.numeric(OF3tmp$dur_day_min) - (includedaycrit*60)) > 0) # line added 10/3/2019 because missing days/nights were previously included
+                  OF3tmp$validdays[days2keep] = 1
+                  # now we have a label for the valid days, we can create a new variable
+                  # in OF4 that is a count of the number of valid days
+                  OF4 = foo34(df=OF3tmp,aggPerIndividual=OF4,nameold="validdays",namenew="Nvaliddays",cval=1)
+                  # do the same for WE (weekend days):
+                  OF3tmp$validdays = 0
+                  OF3tmp$validdays[days2keep[which(OF3tmp$daytype[days2keep] == "WE")]] = 1
+                  OF4 = foo34(df=OF3tmp,aggPerIndividual=OF4,nameold="validdays",namenew="Nvaliddays_WE",cval=1)
+                  # do the same for WD (weekdays):
+                  OF3tmp$validdays = 0
+                  OF3tmp$validdays[days2keep[which(OF3tmp$daytype[days2keep] == "WD")]] = 1
+                  OF4 = foo34(df=OF3tmp,aggPerIndividual=OF4,nameold="validdays",namenew="Nvaliddays_WD",cval=1) # create variable from it
+                  OF4 = foo34(df=OF3tmp[validdaysi,],aggPerIndividual=OF4,nameold="daysleeper",namenew="Ndaysleeper",cval=1)
+                  OF4 = foo34(df=OF3tmp[validdaysi,],aggPerIndividual=OF4,nameold="cleaningcode",namenew="Ncleaningcodezero",cval=0)
+                  OF4 = foo34(df=OF3tmp[validdaysi,],aggPerIndividual=OF4,nameold="sleeplog_used",namenew="Nsleeplog_used",cval=TRUE)
+                  OF4 = foo34(df=OF3tmp[validdaysi,],aggPerIndividual=OF4,nameold="acc_available",namenew="Nacc_available",cval=1)
+
+                  OF4 = cbind(OF4[,1:4],OF4[,(ncol(OF4)-6):ncol(OF4)],OF4[,5:(ncol(OF4)-7)])
+                  nom = names(OF4)
+                  cut = which(nom == "acc_onset_ts" | nom == "acc_wake_ts" |
+                                nom == "sleeplog_onset_ts" | nom == "sleeplog_wake_ts" | nom == "night_number"
+                              | nom == "daysleeper" | nom == "cleaningcode" | nom == "acc_available"
+                              | nom == "sleeplog_used" | nom == "L5TIME" | nom == "M5TIME"
+                              | nom == "L10TIME" | nom == "M10TIME" | nom == "night_number" | nom == "acc_available")
+                  names(OF4)[which(names(OF4)=="weekday")] = "startday"
+                  OF4 = OF4[,-cut]
+                  OF4 = as.matrix(OF4)
+                  OF4[which(is.na(OF4) == TRUE)] = ""
+                  #-------------------------------------------------------------
+                  # store all summaries in csv files
+                  write.csv(OF4,paste(metadatadir,"/results/part5_personsummary_",
+                                      uwi[j],"_L",uTRLi[h1],"M",uTRMi[h2],"V",uTRVi[h3],"_",uacc_def[h4],".csv",sep=""),row.names=FALSE)
+                }
               }
             }
-            
+
           }
         }
       }

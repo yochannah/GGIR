@@ -195,7 +195,12 @@ g.part4 = function(datadir=c(),metadatadir=c(),f0=f0,f1=f1,idloc=1,loglocation =
           }
           letter = apply(as.matrix(accid),MARGIN=c(1),FUN=getLastCharacterValue)
           for (h in 1:length(accid)) {
-            accid[h] = as.character(unlist(strsplit(accid[h],letter[h]))[1])
+            options(warn=-1)
+            numletter = as.numeric(letter[h])
+            options(warn=0)
+            if (is.na(numletter) == TRUE) { # do not remove latest character if it is a number
+              accid[h] = as.character(unlist(strsplit(accid[h],letter[h]))[1])
+            }
           } 
           accid = suppressWarnings(as.numeric(accid))
           #catch for files with only id in filename and for whom the above attempt to extract the id failed:
@@ -219,7 +224,6 @@ g.part4 = function(datadir=c(),metadatadir=c(),f0=f0,f1=f1,idloc=1,loglocation =
               } else {
                 cat(paste0("\nWarning: sleeplog id is stored as format: ", as.character(sleeplog$id[1]),", while
                            code expects format: ",as.character(accid[1])))
-                
               }
             }
           } else {
@@ -857,5 +861,18 @@ g.part4 = function(datadir=c(),metadatadir=c(),f0=f0,f1=f1,idloc=1,loglocation =
     }
     dev.off()
     cnt67 = 1
+  }
+
+  SI = sessionInfo() 
+  sessionInfoFile = paste(metadatadir,"/results/QC/sessioninfo_part4.RData",sep="")
+  if (file.exists(sessionInfoFile)) {
+    FI = file.info(sessionInfoFile)
+    timesincecreation = abs(as.numeric(difftime(FI$ctime,Sys.time(),units="secs")))
+    # if file is older than 2 hours plus a random number of seconds (max 1 hours) then overwrite it
+    if (timesincecreation > (2*3600 + (sample(seq(1,3600,by=0.1),size = 1)))) {
+      save(SI,file=sessionInfoFile)
+    }
+  } else {
+    save(SI,file=sessionInfoFile)
   }
 }
