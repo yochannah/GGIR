@@ -46,6 +46,8 @@ g.LIDS.analyse = function(acc = c(), ws3 = 5, fit.criterion.cosfit = 2,
   # - lm_residuals = residuals of the fitted line
   # - lm_MeanAmplitude = mean residuals of the fitted line = mean amplitude
   # - lm_fitted = fitted line to LIDS
+  # - acc_per_minute - average acceleration per minute, note this aggregate is not directly used in calculating the LIDS score
+  # - binaryclassification_smooth - average binary score per minute, note this aggreate is not directly used in calculating the LIDS score
   #-----------------------------------------------------------------
   # Outstanding action points -VvH:
   # - Avoid hardcoded assumpution that resolution is 1 minute, and instead make epoch setting
@@ -86,11 +88,23 @@ g.LIDS.analyse = function(acc = c(), ws3 = 5, fit.criterion.cosfit = 2,
   #   Step4:
   #   Downsample to 1 minute resolution to speed up code  
   LIDS = LIDS[seq(1,length(LIDS),by=60/ws3)]
+  acc_cumsum = cumsum(c(0,acc))
+  acc_per_minute = diff(acc_cumsum[seq(1,length(acc_cumsum),by=60/ws3)]) / (60/ws3)
+  if (length(acc_per_minute) < length(LIDS)) {
+    acc_per_minute = c(acc_per_minute,rep(0,length(LIDS) - length(acc_per_minute)))
+  }
+  
+  binaryclass_smo_cumsum = cumsum(c(0,binaryclassification_smooth))
+  binclass_per_minute = diff(binaryclass_smo_cumsum[seq(1,length(binaryclass_smo_cumsum),by=60/ws3)]) / (60/ws3)
+  if (length(binclass_per_minute) < length(LIDS)) {
+    binclass_per_minute = c(binclass_per_minute,rep(0,length(LIDS) - length(binclass_per_minute)))
+  }
   
   #-----------------------------------------------------------------
   # Derive time series
   stepsize = 1 #1 minute
   time_min = (1:length(LIDS)) * stepsize
+
   #-----------------------------------------------------------------
   # Define function to perform cosine fit:
   cosfit = function(time_min,LIDS,period, nonstationary = FALSE) {
@@ -170,7 +184,6 @@ g.LIDS.analyse = function(acc = c(), ws3 = 5, fit.criterion.cosfit = 2,
   
   #select best period 
   if (length(which(is.na(PCS$cor) == FALSE)) > 2) {
-    
     if (fit.criterion.cosfit == 1) { #via highest Pearson correlation coefficient
       best = which.max(PCS$cor)[1]
       LIDS_S = PCS[best,]
@@ -236,7 +249,9 @@ g.LIDS.analyse = function(acc = c(), ws3 = 5, fit.criterion.cosfit = 2,
     A = approx(LIDS_S$cycle,LIDS_S$LIDS,xout=cycle_interpol, rule=2, method ="linear", ties=mean)
     A = data.frame(cycle_interpol=A$x, LIDS_norm_interpol=A$y)
     A$time_min = seq(1,by=1, length.out = nrow(A))
-    
+    # add acceleration
+    LIDS_S$acc_per_minute = acc_per_minute
+    LIDS_S$binclass_per_minute = binclass_per_minute
     #add interpolated information
     #need to use function merge for combining as both datasets can differ in length
     LIDS_S <- merge(LIDS_S, A, by="time_min", all=TRUE)
