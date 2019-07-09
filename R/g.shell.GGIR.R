@@ -170,7 +170,6 @@ g.shell.GGIR = function(mode=c(1,2),datadir=c(),outputdir=c(),studyname=c(),f0=1
   if (length(which(ls() == "dofirstpage")) == 0)  dofirstpage = TRUE
   if (length(which(ls() == "visualreport")) == 0)  visualreport = FALSE
 
-
   cat("\n   Help sustain GGIR into the future \n")
   cat("   Check out: https://www.movementdata.nl/how-to-help-sustain-ggir \n")
   cat("   for more information. \n")
@@ -268,17 +267,7 @@ g.shell.GGIR = function(mode=c(1,2),datadir=c(),outputdir=c(),studyname=c(),f0=1
       cat("before you can use argument visualreport or create a report for part 4\n")
       stop()
     }
-<<<<<<< HEAD
   }
-  # if (visualreport==TRUE & length(do.report) == 0) {
-  #   if (file.exists(paste(metadatadir,"/meta/ms4.out",sep=""))) {
-  #   } else {
-  #     do.report=c(2,4) #visual report is impossible without creating quantitative reports first
-  #   }
-  # }
-=======
-  }
->>>>>>> master
   if (length(which(do.report == 2)) > 0) {
     cat('\n')
     cat(paste0(rep('_',options()$width),collapse=''))
