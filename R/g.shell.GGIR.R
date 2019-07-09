@@ -147,16 +147,6 @@ g.shell.GGIR = function(mode=c(1,2),datadir=c(),outputdir=c(),studyname=c(),f0=1
   if (length(which(ls() == "includenightcrit")) == 0)  includenightcrit=16
   if (length(which(ls() == "bout.metric")) == 0)  bout.metric = 1
   if (length(which(ls() == "closedbout")) == 0)  closedbout = FALSE
-<<<<<<< HEAD
-  if (length(which(ls() == "IVIS_windowsize_minutes")) == 0)  IVIS_windowsize_minutes=60
-  if (length(which(ls() == "IVIS_epochsize_seconds")) == 0)  IVIS_epochsize_seconds=30
-  if (length(which(ls() == "acc.metric")) == 0) acc.metric = "ENMO"
-  if (length(which(ls() == "constrain2range")) == 0) constrain2range = TRUE
-  if (length(which(ls() == "do.part3.pdf")) == 0) do.part3.pdf = TRUE
-
-  # # specific for part 5
-=======
->>>>>>> master
   if (length(which(ls() == "boutcriter.in")) == 0)  boutcriter.in = 0.9
   if (length(which(ls() == "boutcriter.lig")) == 0)  boutcriter.lig = 0.8
   if (length(which(ls() == "boutcriter.mvpa")) == 0)  boutcriter.mvpa = 0.8
@@ -168,7 +158,6 @@ g.shell.GGIR = function(mode=c(1,2),datadir=c(),outputdir=c(),studyname=c(),f0=1
   if (length(which(ls() == "boutdur.in")) == 0)  boutdur.in = c(10,20,30)
   if (length(which(ls() == "boutdur.lig")) == 0)  boutdur.lig = c(1,5,10)
   if (length(which(ls() == "save_ms5rawlevels")) == 0) save_ms5rawlevels = FALSE
-<<<<<<< HEAD
   if (length(which(ls() == "do.LIDS")) == 0) do.LIDS = FALSE
   if (length(which(ls() == "LIDS2csv")) == 0) LIDS2csv = FALSE
   if (length(which(ls() == "LIDS_cosfit_periods")) == 0) LIDS_cosfit_periods = seq(30,180,by=5)
@@ -176,23 +165,11 @@ g.shell.GGIR = function(mode=c(1,2),datadir=c(),outputdir=c(),studyname=c(),f0=1
   if (length(which(ls() == "WakeBoutMin")) == 0) WakeBoutMin = 30
   if (length(which(ls() == "SleepBoutMin")) == 0) SleepBoutMin = 180
 
-
-
-  # part 2
-  if (length(which(ls() == "mvpadur")) == 0)  mvpadur = c(1,5,10) # related to part 2 (functionality to anticipate part 5)
-  if (length(which(ls() == "epochvalues2csv")) == 0)  epochvalues2csv = FALSE
-  # if (length(which(ls() == "bout.metric")) == 0) bout.metric = 1
-  if (length(which(ls() == "window.summary.size")) == 0) window.summary.size = 10
-  if (length(which(ls() == "dayborder")) == 0)  dayborder = 0
-  if (length(which(ls() == "iglevels")) == 0)  iglevels = c()
-=======
-
   # VISUAL REPORT
   if (length(which(ls() == "viewingwindow")) == 0)  viewingwindow = 1
   if (length(which(ls() == "dofirstpage")) == 0)  dofirstpage = TRUE
   if (length(which(ls() == "visualreport")) == 0)  visualreport = FALSE
 
->>>>>>> master
 
   cat("\n   Help sustain GGIR into the future \n")
   cat("   Check out: https://www.movementdata.nl/how-to-help-sustain-ggir \n")
