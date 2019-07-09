@@ -3,12 +3,13 @@
 #   24th Oct 2018
 #   last changes by VVH: Aug 13th 2018
 #   adapted by EW: Oct/Nov 2018
-#   lastest change: 06/11/2018 
+#   lastest change: 06/11/2018
 
 
 # By: Vincent van Hees and Eva Winnebeck
-g.LIDS.analyse = function(acc = c(), ws3 = 5, fit.criterion.cosfit = 2, 
-                          LIDS_cosfit_periods = seq(30,180,by=5), nonstationary = FALSE) {
+g.LIDS.analyse = function(acc = c(), ws3 = 5, fit.criterion.cosfit = 2,
+                          LIDS_cosfit_periods = seq(30,180,by=5), nonstationary = FALSE,
+                          LIDSmetric=1) {
   
   # see documentation in .Rd files in the man folder, these are just notes on input / output while
   # developing the code
@@ -19,6 +20,9 @@ g.LIDS.analyse = function(acc = c(), ws3 = 5, fit.criterion.cosfit = 2,
   # - fit.criterion.cosfit: metric to select the best LIDS (1=cor,2=cor*range)
   # - LIDS_cosfit_periods: vector with period lengths (minutes) to consider for the cosine fitting.
   # - nonstationary: logical TRUE/FALSE if the non-stationary cosine fit should also be performed
+  # - LIDSmetric 1: 0 or 1 based on threshold 20 and then 10 minute rolling moving average,
+  #   LIDSmetric 2: 0 or continuous value if acceleration > 20, with acceleration - 20 and then
+  #   10 minute rolling moving average
   #
   # Output:
   # dataframe with the following columns:
@@ -47,46 +51,46 @@ g.LIDS.analyse = function(acc = c(), ws3 = 5, fit.criterion.cosfit = 2,
   # - lm_MeanAmplitude = mean residuals of the fitted line = mean amplitude
   # - lm_fitted = fitted line to LIDS
   # - acc_per_minute - average acceleration per minute, note this aggregate is not directly used in calculating the LIDS score
-  # - binaryclassification_smooth - average binary score per minute, note this aggreate is not directly used in calculating the LIDS score
+  # - ActivityScore_smooth - average binary score per minute, note this aggreate is not directly used in calculating the LIDS score
   #-----------------------------------------------------------------
   # Outstanding action points -VvH:
   # - Avoid hardcoded assumpution that resolution is 1 minute, and instead make epoch setting
   #  flexible, but this also means that assumption of period unit = unit of epochs needs to be account for.
   #-----------------------------------------------------------------
-  # Outstanding action points - EW:
-  # 
-  #-----------------------------------------------------------------
-  
+
   # Calculate Locomotor Inactivity During Sleep (LIDS):
-  #
-  #   Step1: 
-  #   binary classification - movement/non-movement
-  #   threshold 20mg = 0.02g
-  
-  binaryclassification = ifelse(acc < 20, 0, 1) # turn into binary code per epoch (0=non-movement, 1=movement)
-  
+  if (LIDSmetric == 1) {
+    #   Step1:
+    #   binary classification - movement/non-movement
+    #   threshold 20mg = 0.02g
+    ActivityScore = ifelse(acc < 20, 0, 1) # turn into binary code per epoch (0=non-movement, 1=movement)
+  } else if (LIDSmetric == 2) {
+    #   Step1:
+    #   Remove noise by subtracting threshold
+    #   threshold 20mg = 0.02g
+    ActivityScore = ifelse(acc < 20, 0, acc-20)
+    
+  }
   #   Step2:
   #   10-minute filter: 10-minute rolling sum
   #   10min = 600s = 120*5s
-  
   rollsumwindow = 10
-  anyNA = which(is.na(binaryclassification) ==  TRUE)
-  if (length(anyNA) > 0) binaryclassification[anyNA] = 0
-  binaryclassification_smooth = zoo::rollapply(data=binaryclassification, 
-                                               width=(60*rollsumwindow)/ws3, FUN=sum, partial=T) #10-min rolling sum 
+  anyNA = which(is.na(ActivityScore) ==  TRUE)
+  if (length(anyNA) > 0) ActivityScore[anyNA] = 0
+  ActivityScore_smooth = zoo::rollapply(data=ActivityScore,
+                                        width=(60*rollsumwindow)/ws3, FUN=sum, partial=T) #10-min rolling sum
   #speedier alternative if one does not want a partial rollsum:
-  #binaryclassification_smooth = zoo::rollsum(x=binaryclassification, k=(60*rollsumwindow)/ws3, fill=NA) #10-min rolling sum 
+  #ActivityScore_smooth = zoo::rollsum(x=ActivityScore, k=(60*rollsumwindow)/ws3, fill=NA) #10-min rolling sum
   
   #   Step3:
   #   LIDS conversion + 30-min filtering
   #   30min = 1800s = 360*5s
-  LIDS_unfiltered = 100 / (binaryclassification_smooth + 1) 
-  #when using the binaryclassification at 5sec resolution + 10min rollsum, values are scaled sensibly for the following transformation
+  LIDS_unfiltered = 100 / (ActivityScore_smooth + 1)
+  #when using the ActivityScore at 5sec resolution + 10min rollsum, values are scaled sensibly for the following transformation
   LIDS = zoo::rollapply(data=LIDS_unfiltered,width=(60*30)/ws3, FUN=function(x) mean(x,na.rm=T), partial=T)
   
-  
   #   Step4:
-  #   Downsample to 1 minute resolution to speed up code  
+  #   Downsample to 1 minute resolution to speed up code
   LIDS = LIDS[seq(1,length(LIDS),by=60/ws3)]
   acc_cumsum = cumsum(c(0,acc))
   acc_per_minute = diff(acc_cumsum[seq(1,length(acc_cumsum),by=60/ws3)]) / (60/ws3)
@@ -94,7 +98,7 @@ g.LIDS.analyse = function(acc = c(), ws3 = 5, fit.criterion.cosfit = 2,
     acc_per_minute = c(acc_per_minute,rep(0,length(LIDS) - length(acc_per_minute)))
   }
   
-  binaryclass_smo_cumsum = cumsum(c(0,binaryclassification_smooth))
+  binaryclass_smo_cumsum = cumsum(c(0,ActivityScore_smooth))
   binclass_per_minute = diff(binaryclass_smo_cumsum[seq(1,length(binaryclass_smo_cumsum),by=60/ws3)]) / (60/ws3)
   if (length(binclass_per_minute) < length(LIDS)) {
     binclass_per_minute = c(binclass_per_minute,rep(0,length(LIDS) - length(binclass_per_minute)))
@@ -104,18 +108,18 @@ g.LIDS.analyse = function(acc = c(), ws3 = 5, fit.criterion.cosfit = 2,
   # Derive time series
   stepsize = 1 #1 minute
   time_min = (1:length(LIDS)) * stepsize
-
+  
   #-----------------------------------------------------------------
   # Define function to perform cosine fit:
   cosfit = function(time_min,LIDS,period, nonstationary = FALSE) {
     # Cosine fitting inspired by:
     # Roenneberg T, Keller LK, et al. Human Activity and rest in Situ, 2015
     # Methods in Enzymology, Volume 552, http://dx.doi.org/10.1016/bs.mie.2014.11.028
-    # 
+    #
     #   fit(t) = DC + A * sin(wt + phi0) = DC + a*cos(wt) + b*sin(wt)
     #   w=2pi/period (angular frequency)
     #   wt:normalised time in rad
-    # 
+    #
     # input:
     # - x: vector with time time series
     # - y: vector with acc time series
@@ -169,20 +173,20 @@ g.LIDS.analyse = function(acc = c(), ws3 = 5, fit.criterion.cosfit = 2,
   #Perform cosine fits
   #------Stationary fit
   #stationary results dataframe
-  LIDS_S = data.frame(period=NA, DC=NA, a=NA, b=NA, RoO=NA, 
+  LIDS_S = data.frame(period=NA, DC=NA, a=NA, b=NA, RoO=NA,
                       phase=NA, cor=NA, pvalue=NA, MRI=NA)
   
   #setup period comparison (stationary) dataframe
-  PCS = data.frame(period=LIDS_cosfit_periods, DC=NA, a=NA, b=NA, RoO=NA, 
+  PCS = data.frame(period=LIDS_cosfit_periods, DC=NA, a=NA, b=NA, RoO=NA,
                    phase=NA, cor=NA, pvalue=NA, MRI=NA)
   
   #loop over proposed period lengths (discrete series)
-  for (j in 1:length(LIDS_cosfit_periods)) { 
+  for (j in 1:length(LIDS_cosfit_periods)) {
     period = LIDS_cosfit_periods[j]
     PCS[j,] = cosfit(time_min,LIDS = LIDS, period, nonstationary = FALSE) #Apply cosine fit
   }
   
-  #select best period 
+  #select best period
   if (length(which(is.na(PCS$cor) == FALSE)) > 2) {
     if (fit.criterion.cosfit == 1) { #via highest Pearson correlation coefficient
       best = which.max(PCS$cor)[1]
@@ -194,7 +198,7 @@ g.LIDS.analyse = function(acc = c(), ws3 = 5, fit.criterion.cosfit = 2,
       
       #find MRI peak
       for(k in 2:(length(MRI)-1)) {
-        if(MRI[k] > MRI[k-1] & MRI[k] > MRI[k+1]) 
+        if(MRI[k] > MRI[k-1] & MRI[k] > MRI[k+1])
           peak = c(peak,MRI[k])
       }
       #find max peak
@@ -230,7 +234,7 @@ g.LIDS.analyse = function(acc = c(), ws3 = 5, fit.criterion.cosfit = 2,
         LIDS_S$max_cycle[cycle == i] <- max(LIDS[cycle == i],na.rm=FALSE)
         LIDS_S$min_cycle[cycle == i] <- min(LIDS[cycle == i],na.rm=FALSE)
         LIDS_S$RoO_cycle <- with(LIDS_S, max_cycle - min_cycle)
-      }    
+      }
     }
     
     #add linear model information
@@ -259,23 +263,23 @@ g.LIDS.analyse = function(acc = c(), ws3 = 5, fit.criterion.cosfit = 2,
   }
   
   #----Non-stationary fit
-  #BEWARE: 
+  #BEWARE:
   #The following performs a cosine fit for each epoch using the data surrounding it by +/- period/2
   #Fits based on 1 cycle may not be reliable especially for period determination
   #Large edge effects reduce length of analysed time series by the maximum period length tested
   if(nonstationary == TRUE){#only performed if explicitly requested
     #non-stationary results dataframe
-    LIDS_NS = data.frame(time_min=time_min, 
-                         period=NA, DC=NA, a=NA, b=NA, RoO=NA, 
+    LIDS_NS = data.frame(time_min=time_min,
+                         period=NA, DC=NA, a=NA, b=NA, RoO=NA,
                          phase=NA, cor=NA, pvalue=NA, MRI=NA)
     #loop over time series epoch by epoch
-    for (i in 1:length(LIDS)) { 
+    for (i in 1:length(LIDS)) {
       #setup period comparison (non-stationary) dataframe
-      PCNS = data.frame(period=LIDS_cosfit_periods, DC=NA, a=NA, b=NA, RoO=NA, 
+      PCNS = data.frame(period=LIDS_cosfit_periods, DC=NA, a=NA, b=NA, RoO=NA,
                         phase=NA, cor=NA, pvalue=NA, MRI=NA)
       
       #loop over proposed period lengths (discrete series)
-      for (j in 1:length(LIDS_cosfit_periods)) { 
+      for (j in 1:length(LIDS_cosfit_periods)) {
         period = LIDS_cosfit_periods[j]
         halfp = (period)/2
         halfpmax = max(LIDS_cosfit_periods)/2
@@ -287,7 +291,7 @@ g.LIDS.analyse = function(acc = c(), ws3 = 5, fit.criterion.cosfit = 2,
           }
         }
       }
-      #select best period 
+      #select best period
       if (length(which(is.na(PCNS$cor) == FALSE)) > 2) {
         
         if (fit.criterion.cosfit == 1) { #via highest Pearson correlation coefficient
@@ -297,7 +301,7 @@ g.LIDS.analyse = function(acc = c(), ws3 = 5, fit.criterion.cosfit = 2,
           MRI = PCNS$MRI
           #find MRI peak
           for(k in 2:(length(MRI)-1)) {
-            if(MRI[k] > MRI[k-1] & MRI[k] > MRI[k+1]) 
+            if(MRI[k] > MRI[k-1] & MRI[k] > MRI[k+1])
               peak = c(peak,MRI[k])
           }
           #find max peak
@@ -332,7 +336,7 @@ g.LIDS.analyse = function(acc = c(), ws3 = 5, fit.criterion.cosfit = 2,
       LIDS_NS$LIDSperiod_interpol = A$y
       LIDSan = list(LIDS_S=LIDS_S, LIDS_NS=LIDS_NS)
     }
-  }#end of if(nonstationary == TRUE) 
+  }#end of if(nonstationary == TRUE)
   if (length(LIDSan) > 0) {# only report LIDS if LIDS analyses were successful
     return(invisible(LIDSan))
   } else {

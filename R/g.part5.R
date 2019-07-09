@@ -802,8 +802,12 @@ g.part5 = function(datadir=c(),metadatadir=c(),f0=c(),f1=c(),strategy=1,maxdur=7
                               #analyse twice using two different LIDS signals
                               #1) LIDS using a binary distinction movement/non-movement above a threshold
                               #2) LIDS using ENMO minus a threshold
-                              LIDSan = g.LIDS.analyse(acc=accnight,ws3=ws3,fit.criterion.cosfit=fit.criterion.cosfit, LIDS_cosfit_periods = LIDS_cosfit_periods, nonstationary = nonstationary)
-                              LIDSan_ENMOsub = g.LIDS.analyse_ENMOsub(acc=accnight,ws3=ws3,fit.criterion.cosfit=fit.criterion.cosfit, LIDS_cosfit_periods = LIDS_cosfit_periods, nonstationary = nonstationary)
+                              LIDSan = g.LIDS.analyse(acc=accnight,ws3=ws3,fit.criterion.cosfit=fit.criterion.cosfit,
+                                                      LIDS_cosfit_periods = LIDS_cosfit_periods, nonstationary = nonstationary,
+                                                      LIDSmetric=1)
+                              LIDSan_ENMOsub = g.LIDS.analyse(acc=accnight,ws3=ws3,fit.criterion.cosfit=fit.criterion.cosfit,
+                                                                      LIDS_cosfit_periods = LIDS_cosfit_periods, nonstationary = nonstationary,
+                                                                      LIDSmetric=2)
 
                               if (length(LIDSan) > 0) { # only report LIDS if LIDS analyses were successful
                                 LIDS_S = LIDSan$LIDS_S

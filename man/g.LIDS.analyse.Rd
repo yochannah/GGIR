@@ -11,7 +11,7 @@
 \usage{
   g.LIDS.analyse(acc = c(), ws3 = 5,fit.criterion.cosfit = 2, 
                           LIDS_cosfit_periods = seq(30,180,by=5),
-                          nonstationary=FALSE)
+                          nonstationary=FALSE, LIDSmetric=1)
 }
 \arguments{
   \item{acc}{
@@ -28,6 +28,12 @@
   }
   \item{nonstationary}{
    Boolean to indicate whether nonstationary analysis should be performed
+  }
+  \item{LIDSmetric}{
+    Metric to used to quantify LIDS score. If value=1: 0 or 1 based on ENMO threshold 20
+    and then 10 minute rolling moving average, Next, LIDS = 100 / (ActivityScore_smooth + 1).
+    If value =2: 0 or continuous value if ENMO > 20, followed by ENMO=ENMO - 20 and then
+    10 minute rolling moving average. Next, LIDS = 100 / (ActivityScore_smooth + 1).
   }
   
 }
@@ -64,6 +70,9 @@ hase=SCF$phase,period = per,amplitude = amplitude,cor = ct2$cor, pvalue = ct2$pv
 \item \code{amplitude} amplitude of the fitted cosine
 \item \code{cor} correlation coefficient between fitted and raw
 \item \code{pvalue} pvalue of the correlation between fitted and raw
+\item \code{acc_per_minute} Average acceleration per minute, note this aggregate is not directly used in calculating the LIDS score
+\item \code{ActivityScore_smooth} Average binary score per minute, note this aggreate is not directly used in calculating the LIDS score
+  
 }
 }
 \examples{
