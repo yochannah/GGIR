@@ -393,7 +393,6 @@ g.part5 = function(datadir=c(),metadatadir=c(),f0=c(),f1=c(),strategy=1,maxdur=7
                       }
                       # ms5rawlevels[rep(seq_len(nrow(ms5rawlevels)), each=ws3),]
                       # ms5rawlevels$time[1]
-                      print(rawlevels_fname)
                       write.csv(ms5rawlevels,file = rawlevels_fname,row.names = FALSE)
                       rm(ms5rawlevels)
                     }
