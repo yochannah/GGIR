@@ -854,10 +854,11 @@ g.part5 = function(datadir=c(),metadatadir=c(),f0=c(),f1=c(),strategy=1,maxdur=7
                                 LIDSvariables = as.vector(c(data.frame(wakeduraftersleep = sleepbouts[1,3],
                                                                        sleepboutlength = sleepboutlength,
                                                                        time_sleepboutstart_char = as.character(time_sleepboutstart_char),
-                                                                       time_sleepboutstart_num = time_sleepboutstart_num),
+                                                                       time_sleepboutstart_num = time_sleepboutstart_num, stringsAsFactors = FALSE),
                                                             LIDS_S_nsummary)) #4 sleep + 11 binary + 11 ENMOsub variables = 26 variables
-
-                                dsummary[di,fi:(fi+25)] = as.character(LIDSvariables) # Comment Vincent: Although this is a nice object with value names I am converting into a character vector, because that is what dsummary expects.
+                                # Comment Vincent: Although LIDS_S_nsummary is a nice object with value names, I am converting into a character vector
+                                # because that is what dsummary expects.
+                                dsummary[di,fi:(fi+25)] = as.character(LIDSvariables) 
                                 #Store LIDS time series
                                 #as R dataframe
                                 save(LIDS_S,file=paste(metadatadir,LIDSfolder,"/file_",fnames.ms3[i],"_night_",wi,"_bout_",sleepboutnr,".csv",sep=""))
@@ -1023,6 +1024,7 @@ g.part5 = function(datadir=c(),metadatadir=c(),f0=c(),f1=c(),strategy=1,maxdur=7
       }
     }
   }
+  
   SI = sessionInfo()
   sessionInfoFile = paste(metadatadir,"/results/QC/sessioninfo_part5.RData",sep="")
   if (file.exists(sessionInfoFile)) {
