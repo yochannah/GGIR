@@ -9,35 +9,32 @@ profiling of sleep and physical activity stratified across intensity levels and
 based on bouted periods as well as non-bouted periods.
 }
 \usage{
-g.part5(datadir=c(), metadatadir=c(), f0=c(), f1=c(), strategy=1, 
-  maxdur=7, hrs.del.start=0, hrs.del.end =0,
-  loglocation= c(), excludefirstlast.part5=FALSE, 
-  windowsizes=c(5,900,3600),acc.metric="ENMO", boutcriter.mvpa=0.8, 
-  boutcriter.in=0.9, boutcriter.lig=0.8, storefolderstructure=FALSE, 
-  threshold.lig = c(40), threshold.mod = c(100),
-  threshold.vig = c(400), timewindow=c("MM","WW"), 
-  boutdur.mvpa = c(1,5,10), boutdur.in = c(10,20,30), 
-  boutdur.lig = c(1,5,10), winhr = 5, M5L5res = 10,
-  overwrite=FALSE, desiredtz="Europe/London", 
-<<<<<<< HEAD
-  bout.metric=4, dayborder=0, save_ms5rawlevels=FALSE, do.LIDS = FALSE,
-  LIDS2csv = FALSE, LIDS_cosfit_periods = seq(30,180,by=5), fit.criterion.cosfit = 2,
-  nonstationary = FALSE,
-  WakeBoutMin = 30, SleepBoutMin = 180)
-=======
-  bout.metric=4, dayborder=0, save_ms5rawlevels=FALSE, do.parallel=TRUE)
-
->>>>>>> master
+g.part5(datadir=c(), metadatadir=c(), f0=c(), f1=c(), strategy=1,
+        maxdur=7, hrs.del.start=0, hrs.del.end =0,
+        loglocation= c(), excludefirstlast.part5=FALSE,
+        windowsizes=c(5,900,3600), acc.metric="ENMO",
+        boutcriter.mvpa=0.8,boutcriter.in=0.9, boutcriter.lig=0.8,
+        storefolderstructure=FALSE, threshold.lig = c(40),
+        threshold.mod = c(100), threshold.vig = c(400),
+        timewindow=c("MM","WW"), boutdur.mvpa = c(1,5,10),
+        boutdur.in = c(10,20,30), boutdur.lig = c(1,5,10),
+        winhr = 5, M5L5res = 10, overwrite=FALSE,
+        desiredtz="Europe/London", bout.metric=4, dayborder = 0, 
+        save_ms5rawlevels = FALSE, do.parallel = TRUE, 
+        do.LIDS = FALSE, LIDS2csv = FALSE, 
+        LIDS_cosfit_periods = seq(30,180,by=5),
+        fit.criterion.cosfit = 2,  nonstationary = FALSE,
+        WakeBoutMin = 30, SleepBoutMin = 180)
 }
 \arguments{
   \item{datadir}{
   Directory where the accelerometer files are stored or list of accelerometer
   filenames and directories
-  } 
+  }
  \item{metadatadir}{
   Directory that holds a folders 'meta' and inside this a folder 'basic' which
   contains the milestone data produced by g.part1. The folderstructure
-  is normally created by g.part1 and g.shell.GGIR will recognise what the value 
+  is normally created by g.part1 and g.shell.GGIR will recognise what the value
   of metadatadir is.
   }
  \item{f0}{
@@ -58,7 +55,7 @@ g.part5(datadir=c(), metadatadir=c(), f0=c(), f1=c(), strategy=1,
     definitely stop? (set to zero if unknown = default), see \link{g.impute}
   }
  \item{hrs.del.start}{
-  how many HOURS after start of experiment did wearing of monitor start?, 
+  how many HOURS after start of experiment did wearing of monitor start?,
     see \link{g.impute}
   }
  \item{hrs.del.end}{
@@ -135,7 +132,7 @@ g.part5(datadir=c(), metadatadir=c(), f0=c(), f1=c(), strategy=1,
  \item{boutdur.in}{
   Durations of inactivty bouts in minutes to be extracted. Inactivity bouts are
   detected in the segments of the data which were not labelled as sleep or MVPA
-  bouts. The default duration values is c(10,20,30), this will start with the 
+  bouts. The default duration values is c(10,20,30), this will start with the
   identification of 30 minute bouts, followed by 20 minute bouts in the rest of
   the data, and followed by 10 minute bouts in the rest of the data.
   }
@@ -144,7 +141,7 @@ g.part5(datadir=c(), metadatadir=c(), f0=c(), f1=c(), strategy=1,
   bouts are detected in the segments of the data which were not labelled as sleep,
   MVPA, or inactivity bouts. The default duration values is c(1,5,10), this will
   start with the identification of 10 minute bouts, followed by 5 minute bouts
-  in the rest of the data, and followed by 1 minute bouts in the rest of the data.  
+  in the rest of the data, and followed by 1 minute bouts in the rest of the data.
   }
   \item{M5L5res}{
   resoltion of L5 and M5 analysis in minutes (default: 10 minutes)
@@ -158,10 +155,10 @@ g.part5(datadir=c(), metadatadir=c(), f0=c(), f1=c(), strategy=1,
   see \link{g.getmeta}
   }
   \item{bout.metric}{
-   See documnetion in \link{g.getbout} and 
+   See documnetion in \link{g.getbout} and
   }
   \item{dayborder}{
-   Hour at which days start and end (default = 0), value = 4 would mean 4am 
+   Hour at which days start and end (default = 0), value = 4 would mean 4am
   }
   \item{winhr}{
    see \link{g.getmeta}
@@ -169,7 +166,6 @@ g.part5(datadir=c(), metadatadir=c(), f0=c(), f1=c(), strategy=1,
   \item{save_ms5rawlevels}{
    boolean, whether to save the time series classification (levels) as a csv files
   }
-<<<<<<< HEAD
   \item{do.LIDS}{
    boolean, whether to do LIDS analysis (default: FALSE).
   }
@@ -192,12 +188,9 @@ g.part5(datadir=c(), metadatadir=c(), f0=c(), f1=c(), strategy=1,
   \item{SleepBoutMin}{
    Mininum duration of a Sleep Bout (minutes)
   }
-=======
   \item{do.parallel}{
     Boolean whether to use multi-core processing (only works if at least 4 CPU cores are available.
   }
-  
->>>>>>> master
 }
 \value{
  The function provides no values, it only ensures that other functions are called
@@ -207,7 +200,7 @@ g.part5(datadir=c(), metadatadir=c(), f0=c(), f1=c(), strategy=1,
 This function writes all its output to an RData file
 The value \code{output} is a dataframe and comes with a large range of variables
 which hopefully are sufficiently intuitive or are already explained elsewhere in the
-package tutorial. When g.part5 is called from \link{g.shell.GGIR} with argument 
+package tutorial. When g.part5 is called from \link{g.shell.GGIR} with argument
 do.report = 5 then the output of g.part5 is conventiently stored in a csv spreadsheet.
 Therefore, you may not want/need to work with part5 directly.
 \cr
@@ -226,12 +219,12 @@ up after noon
 \item cleaningcode, 0: no problem; 1: sleeplog not available, 2: not enough valid
 accelerometer data, 3: no accelerometer data available, 4: there were no nights
 to be analysed for this person
-\item window_length_in_hours, this relates to the definition of a day either from 
+\item window_length_in_hours, this relates to the definition of a day either from
 waking up till waking up the next day or from midnight to midnight
 \item dur = duration
 \item acc = (average) acceleration
 \item nightwak = night waking
-\item SIB=sustained inactivity bouts, are the periods of time during which the 
+\item SIB=sustained inactivity bouts, are the periods of time during which the
 accelerometer does not rotate at all for at least 5 or 10 minutes. This could be
 daytime sleep or the monitor not being worn for a very short period of time.
 \item OIN = other inactivity
@@ -253,7 +246,7 @@ threshold for at least X percent of the time.
 \item If boutdur.mvpa holds two bout duration thresholds like 1 and 10 minutes when
 it is set to c(1,10) then you will get D1T100 and D10T100. In this case D1T100
 effectively means bouts between 1 and 9.99 minutes, while D10T100 refers to bouts of
-at least 10 minutes. 
+at least 10 minutes.
 \item TMOD and TVIG are total moderate and total vigorous PA with all bouted and
 unbouted time contributing. Just MOD and VIG are only the unbouted time spent in
 those categories.
@@ -272,12 +265,12 @@ inactivity
 Other inactivity, Light, Moderate, Vigorous
 \item Additionally they a grouped in: MVPA bouts (Moderate or Vigorous),
 Light bouts (just light), Inactivity bouts (Other inactivity or SIB),
-And the non-bouted time spent in each of the five categories, And 
+And the non-bouted time spent in each of the five categories, And
 also as the total of each category: TSIB, TOIN, TLIG, TMOD, TVIG
 \item dur_day_min_pla, dur_night_min_pla, and dur_nightandday_min_pla: duration of
 a day and night time
 }
-Example variable explanations: dur_day_OIN30_min is the time spent in 
+Example variable explanations: dur_day_OIN30_min is the time spent in
 minutes in other inactiivty during the day with a threshold of
 30 mg not part of inactivity bouts, dur_day_MOD100_400_min is the time spent
 in moderate activity defined between 100 and 400mg but not part of an MVPA bout,
@@ -288,7 +281,7 @@ the existence of dur_INB_D10T30_min and dur_INB_D30T30_min indicates that
 dur_INB_D10T30_min corresponds to inactivity bouts lasting between 10 and 30
 minutes and are defined by the threshold 30mg.\cr
 \cr
-Motivation for default bout criteria for inactivity 0.9: Ssomewhat arbitrary 
+Motivation for default bout criteria for inactivity 0.9: Ssomewhat arbitrary
 decision, but the idea is that if you allow for bouts of 30 minutes it would
 not make sense to allow for breaks of 20 percent (6 minutes!) this is why I
 used a more stringent criteria for the highest category. Please note that

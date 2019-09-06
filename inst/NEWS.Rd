@@ -1,7 +1,6 @@
 \name{NEWS}
 \title{News for Package \pkg{GGIR}}
 \newcommand{\cpkg}{\href{http://CRAN.R-project.org/package=#1}{\pkg{#1}}}
-=======
 \section{Changes in version 1.10-4 (release date:07-09-2019)}{
 \itemize{
   \item Experimental version of LIDS analysis added.

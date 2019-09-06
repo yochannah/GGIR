@@ -17,10 +17,10 @@ g.part5 = function(datadir=c(),metadatadir=c(),f0=c(),f1=c(),strategy=1,maxdur=7
                    winhr = 5,
                    M5L5res = 10,
                    overwrite=FALSE,desiredtz="Europe/London",bout.metric=4, dayborder = 0, save_ms5rawlevels = FALSE,
-do.LIDS = FALSE, LIDS2csv = FALSE, LIDS_cosfit_periods = seq(30,180,by=5),
-fit.criterion.cosfit = 2,  nonstationary = FALSE,
-WakeBoutMin = 30, SleepBoutMin = 180,
-                   do.parallel = TRUE) {
+                   do.parallel = TRUE,
+                   do.LIDS = FALSE, LIDS2csv = FALSE, LIDS_cosfit_periods = seq(30,180,by=5),
+                   fit.criterion.cosfit = 2,  nonstationary = FALSE,
+                   WakeBoutMin = 30, SleepBoutMin = 180) {
   options(encoding = "UTF-8")
   Sys.setlocale("LC_TIME", "C") # set language to Englishs
   # description: function called by g.shell.GGIR
