@@ -19,10 +19,15 @@ g.part5(datadir=c(), metadatadir=c(), f0=c(), f1=c(), strategy=1,
   boutdur.mvpa = c(1,5,10), boutdur.in = c(10,20,30), 
   boutdur.lig = c(1,5,10), winhr = 5, M5L5res = 10,
   overwrite=FALSE, desiredtz="Europe/London", 
+<<<<<<< HEAD
   bout.metric=4, dayborder=0, save_ms5rawlevels=FALSE, do.LIDS = FALSE,
   LIDS2csv = FALSE, LIDS_cosfit_periods = seq(30,180,by=5), fit.criterion.cosfit = 2,
   nonstationary = FALSE,
   WakeBoutMin = 30, SleepBoutMin = 180)
+=======
+  bout.metric=4, dayborder=0, save_ms5rawlevels=FALSE, do.parallel=TRUE)
+
+>>>>>>> master
 }
 \arguments{
   \item{datadir}{
@@ -164,6 +169,7 @@ g.part5(datadir=c(), metadatadir=c(), f0=c(), f1=c(), strategy=1,
   \item{save_ms5rawlevels}{
    boolean, whether to save the time series classification (levels) as a csv files
   }
+<<<<<<< HEAD
   \item{do.LIDS}{
    boolean, whether to do LIDS analysis (default: FALSE).
   }
@@ -186,6 +192,12 @@ g.part5(datadir=c(), metadatadir=c(), f0=c(), f1=c(), strategy=1,
   \item{SleepBoutMin}{
    Mininum duration of a Sleep Bout (minutes)
   }
+=======
+  \item{do.parallel}{
+    Boolean whether to use multi-core processing (only works if at least 4 CPU cores are available.
+  }
+  
+>>>>>>> master
 }
 \value{
  The function provides no values, it only ensures that other functions are called
@@ -206,7 +218,7 @@ Explaination of general terminology in the output of g.part5:\cr
 \item acc_onset = onset of sleep according to accelerometer (+ diary) method expressed
 in hours since the midnight in the night preceding the night of interest, e.g. 26 is 2am.
 \item acc_wake = waking up time according to accelerometer (+ diary) method expressed
-in hours since the midnight in the night preceding the night of interest, e.g. 38 is 8am
+in hours since the midnight in the night preceding the night of interest, e.g. 32 is 8am
 \item acc_onset_ts = onset of sleep according to accelerometer (+ diary) method expressed
 as a timestamp hours:minutes:seconds
 \item daysleep, if 0 then the person woke up before noon, if 1 then the person woke

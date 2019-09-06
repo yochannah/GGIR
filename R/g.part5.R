@@ -17,18 +17,15 @@ g.part5 = function(datadir=c(),metadatadir=c(),f0=c(),f1=c(),strategy=1,maxdur=7
                    winhr = 5,
                    M5L5res = 10,
                    overwrite=FALSE,desiredtz="Europe/London",bout.metric=4, dayborder = 0, save_ms5rawlevels = FALSE,
-                   do.LIDS = FALSE, LIDS2csv = FALSE, LIDS_cosfit_periods = seq(30,180,by=5),
-                   fit.criterion.cosfit = 2,  nonstationary = FALSE,
-                   WakeBoutMin = 30, SleepBoutMin = 180) {
+do.LIDS = FALSE, LIDS2csv = FALSE, LIDS_cosfit_periods = seq(30,180,by=5),
+fit.criterion.cosfit = 2,  nonstationary = FALSE,
+WakeBoutMin = 30, SleepBoutMin = 180,
+                   do.parallel = TRUE) {
   options(encoding = "UTF-8")
   Sys.setlocale("LC_TIME", "C") # set language to Englishs
   # description: function called by g.shell.GGIR
   # aimed to merge the milestone output from g.part2, g.part3, and g.part4
   # in order to create a merged report of both physical activity and sleep
-  # if store.ms = TRUE then it will work with stored milestone data per accelerometer file
-  # if store.ms = FALSE then it will work with the stored spreadsheets from g.part2 and g.part4 and milestone data from part g.part1
-  # this distinction is needed to facilitate both parallel analyses of multiple files (set store.ms to TRUE) and to facilitate
-  # serial analysis of small data pools
   #======================================================================
   # create new folder (if not existent) for storing milestone data
   ms5.out = "/meta/ms5.out"
@@ -90,12 +87,37 @@ g.part5 = function(datadir=c(),metadatadir=c(),f0=c(),f1=c(),strategy=1,maxdur=7
     fullfilenames = folderstructure$fullfilenames
     foldername = folderstructure$foldername
   }
+  if (f1 > length(fnames.ms3)) f1 = length(fnames.ms3)
+  if (f0 > length(fnames.ms3)) f0 = 1
+  if (f1 == 0 | length(f1) == 0 | f1 > length(fnames.ms3))  f1 = length(fnames.ms3)
   #======================================================================
-  # loop through milestone data-files (in case of store.ms=TRUE)
-  # or filenames stored in output of g.part2 and g.part4 (in case of store.ms=FALSE)
-  t0 = t1 = Sys.time()
-  for (i in f0:f1) {
-    if (length(ffdone) > 0) { #& store.ms == TRUE
+  # loop through milestone data-files or filenames stored in output of g.part2 and g.part4
+  # setup parallel backend to use many processors
+  if (do.parallel == TRUE) {
+    closeAllConnections() # in case there is a still something running from last time, kill it.
+    cores=parallel::detectCores()
+    Ncores = cores[1]
+    if (Ncores > 3) {
+      cl <- parallel::makeCluster(Ncores-1) #not to overload your computer
+      doParallel::registerDoParallel(cl)
+    } else {
+      cat(paste0("\nparallel processing not possible because number of available cores (",Ncores,") < 4"))
+      do.parallel = FALSE
+    }
+  }
+  t0 = t1 = Sys.time() # copied here
+  if (do.parallel == TRUE) {
+    cat(paste0('\n Busy processing ... see ',metadatadir,'/ms5', ' for progress\n'))
+  }
+  fe_dopar = foreach::`%dopar%`
+  fe_do = foreach::`%do%`
+  i = 0 # declare i because foreach uses it, without declaring it
+  `%myinfix%` = ifelse(do.parallel, fe_dopar, fe_do) # thanks to https://stackoverflow.com/questions/43733271/how-to-switch-programmatically-between-do-and-dopar-in-foreach
+  output_list =foreach::foreach(i=f0:f1, .packages = 'GGIR', .errorhandling='pass') %myinfix% { # the process can take easily 1 minute per file, so probably there is a time gain by doing it parallel
+    tryCatchResult = tryCatch({
+
+    # for (i in f0:f1) {
+    if (length(ffdone) > 0) {
       if (length(which(ffdone == fnames.ms3[i])) > 0) {
         skip = 1 #skip this file because it was analysed before")
       } else {
@@ -381,7 +403,6 @@ g.part5 = function(datadir=c(),metadatadir=c(),f0=c(),f1=c(),strategy=1,maxdur=7
                   bc.mvpa = levels$bc.mvpa
                   bc.lig = levels$bc.lig
                   bc.in = levels$bc.in
-
                   if (save_ms5rawlevels == TRUE) {
                     rawlevels_fname = paste(metadatadir,ms5.outraw,"/",fnames.ms3[i],"_",TRLi,"_",TRMi,"_",TRVi,"raw.csv",sep="")
                     if (length(time) == length(LEVELS)) {
@@ -391,8 +412,6 @@ g.part5 = function(datadir=c(),metadatadir=c(),f0=c(),f1=c(),strategy=1,maxdur=7
                         replacev = which(ms5rawlevels$class_id == (LNi-1))
                         if (length(replacev) > 0) ms5rawlevels$class_name[replacev] = Lnames[LNi]
                       }
-                      # ms5rawlevels[rep(seq_len(nrow(ms5rawlevels)), each=ws3),]
-                      # ms5rawlevels$time[1]
                       write.csv(ms5rawlevels,file = rawlevels_fname,row.names = FALSE)
                       rm(ms5rawlevels)
                     }
@@ -599,7 +618,7 @@ g.part5 = function(datadir=c(),metadatadir=c(),f0=c(),f1=c(),strategy=1,maxdur=7
                         dsummary[di,fi] = TRVi
                         ds_names[fi] = "TRVi";      fi = fi + 1
                         wlih = ((qqq2-qqq1)+1)/((60/ws3)*60)
-			if (qqq1 > length(LEVELS)) qqq1 = length(LEVELS)
+                        if (qqq1 > length(LEVELS)) qqq1 = length(LEVELS)
                         if (wlih > 30 & length(summarysleep_tmp2$night) > 1) { # scenario when day is missing and code reaches out to two days before this day
                           # if (summarysleep_tmp2$night[wi] - summarysleep_tmp2$night[wi-1] != 1) {
                           qqq1 = (qqq2 - (24* ((60/ws3)*60))) + 1 # code now uses only 24hours before waking up
@@ -858,7 +877,7 @@ g.part5 = function(datadir=c(),metadatadir=c(),f0=c(),f1=c(),strategy=1,maxdur=7
                                                             LIDS_S_nsummary)) #4 sleep + 11 binary + 11 ENMOsub variables = 26 variables
                                 # Comment Vincent: Although LIDS_S_nsummary is a nice object with value names, I am converting into a character vector
                                 # because that is what dsummary expects.
-                                dsummary[di,fi:(fi+25)] = as.character(LIDSvariables) 
+                                dsummary[di,fi:(fi+25)] = as.character(LIDSvariables)
                                 #Store LIDS time series
                                 #as R dataframe
                                 save(LIDS_S,file=paste(metadatadir,LIDSfolder,"/file_",fnames.ms3[i],"_night_",wi,"_bout_",sleepboutnr,".csv",sep=""))
@@ -927,7 +946,7 @@ g.part5 = function(datadir=c(),metadatadir=c(),f0=c(),f1=c(),strategy=1,maxdur=7
                         fi = fi + bci
                         #===============================================
                         # NUMBER OF WINDOWS
-			for (levelsc in 0:(length(Lnames)-1)) {
+                        for (levelsc in 0:(length(Lnames)-1)) {
                           dsummary[di,fi] = length(which(diff(which(LEVELS[sse] != levelsc)) > 1)) #qqq1:qqq2
                           if (dsummary[di,fi] == 0 & LEVELS[qqq1] == levelsc) dsummary[di,fi] = 1
                           ds_names[fi] = paste("Nblocks_",Lnames[levelsc+1],sep="");      fi = fi + 1
@@ -1023,8 +1042,20 @@ g.part5 = function(datadir=c(),metadatadir=c(),f0=c(),f1=c(),strategy=1,maxdur=7
         rm(output,dsummary)
       }
     }
+    }) # END tryCatch
+
+    return(tryCatchResult)
   }
-  
+  if (do.parallel == TRUE) {
+    on.exit(parallel::stopCluster(cl))
+    for (oli in 1:length(output_list)) { # logged error and warning messages
+      if (is.null(unlist(output_list[oli])) == FALSE) {
+        cat(paste0("\nErrors and warnings for ",fnames.ms3[oli]))
+        print(unlist(output_list[oli])) # print any error and warnings observed
+      }
+    }
+  }
+
   SI = sessionInfo()
   sessionInfoFile = paste(metadatadir,"/results/QC/sessioninfo_part5.RData",sep="")
   if (file.exists(sessionInfoFile)) {
